@@ -2,7 +2,7 @@ const express = require('express')
 const app = express();
 const cookieParser = require('cookie-parser')
 
-app.use(cookieParser());
+app.use(cookieParser('2342342nfafkljvlkz'));
 
 const products = {
     1:{title:'the history of web'},
@@ -23,8 +23,8 @@ app.get('/products', (req,res) => {
 app.get('/cart/:id', (req,res) => {
     let id = req.params.id;
     let cart;
-    if(req.cookies.cart) {
-        cart = req.cookies.cart;
+    if(req.signedCookies.cart) {
+        cart = req.signedCookies.cart;
     }
     else {
         cart = {};
@@ -34,13 +34,12 @@ app.get('/cart/:id', (req,res) => {
         cart[id] = 0;
     }
     cart[id] = parseInt(cart[id])+1
-    res.cookie('cart',cart);
-    // res.send(cart)
+    res.cookie('cart',cart, {signed:true});
     res.redirect('/cart')
 })
 
 app.get('/cart', (req,res) => {
-    let cart = req.cookies.cart;
+    let cart = req.signedCookies.cart;
     let output =''
     if(!cart) {
         res.send('empty')
@@ -53,17 +52,17 @@ app.get('/cart', (req,res) => {
     res.send(`<h1>CART</h1><ul>${output}</ul> <a href="/products">back to product list</a>`)
 })
 
-// app.get('/count', (req,res) => {
-//     let count;
-//     if(req.cookies.count) {
-//         count = parseInt(req.cookies.count)+1
-//     }
-//     else {
-//         count = 0;
-//     }
-//     res.cookie('count', count)
-//     res.send('count:' + count)
-// })
+app.get('/count', (req,res) => {
+    let count;
+    if(req.signedCookies.count) {
+        count = parseInt(req.signedCookies.count)+1
+    }
+    else {
+        count = 0;
+    }
+    res.cookie('count', count, {signed:true})
+    res.send('count:' + count)
+})
 app.listen(3000, () => {
     console.log('listening to 3000')
 })
