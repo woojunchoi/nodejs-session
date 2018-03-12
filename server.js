@@ -20,6 +20,25 @@ app.get('/products', (req,res) => {
     res.send(`<h1>Products</h1><ul>${output}</ul><a href="/cart">Cart</a>`)
 })
 
+app.get('/cart/:id', (req,res) => {
+    let id = req.params.id;
+    let cart;
+    if(req.cookies.count) {
+        cart = req.cookies.count;
+    }
+    else {
+        cart = {};
+    }
+
+    if(!cart[id]) {
+        cart[id] = 0;
+    }
+
+    cart[id] = parseInt(cart[id])+1;
+    res.cookie('cart',cart);
+    res.redirect('/cart')
+})
+
 app.get('/count', (req,res) => {
     let count;
     if(req.cookies.count) {
