@@ -28,14 +28,15 @@ app.post('/auth/login', (req,res) => {
         username:'haru',
         password:'haru'
     }
-})
-    if(user.username === req.body.username) {
+    if(user.username === req.body.username && user.password === req.body.username)  {
         res.redirect('/welcome')
     }
     else {
         res.send(`<p>Please try again</p> <a href='/auth/login>login</a>`)
     }
-    
+})
+
+
 app.get('/auth/login', function(req, res){
     var output = `
     <h1>Login</h1>
