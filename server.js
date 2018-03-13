@@ -1,27 +1,58 @@
 const express = require('express')
 const session = require('express-session')
-
+const bodyParser = require('body-parser')
 const app = express();
 // const cookieParser = require('cookie-parser')
 // app.use(cookieParser('2342342nfafkljvlkz'));
-
-
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use(session({
     secret: '21424144fae',
     resave: false,
     saveUninitialized: true,
   }))
 
-app.get('/count', (req,res) => {
-    if(req.session.count) {
-        req.session.count++
+// app.get('/count', (req,res) => {
+//     if(req.session.count) {
+//         req.session.count++
+//     }
+//     else {
+//         req.session.count = 1;
+
+//     }
+//     res.send(`<h1>hi session: ${req.session.count}</h1>`)
+// })
+
+app.post('/auth/login', (req,res) => {
+    const user = {
+        username:'haru',
+        password:'haru'
+    }
+})
+    if(user.username === req.body.username) {
+        res.redirect('/welcome')
     }
     else {
-        req.session.count = 1;
-
+        res.send(`<p>Please try again</p> <a href='/auth/login>login</a>`)
     }
-    res.send(`<h1>hi session: ${req.session.count}</h1>`)
-})
+    
+app.get('/auth/login', function(req, res){
+    var output = `
+    <h1>Login</h1>
+    <form action="/auth/login" method="post">
+      <p>
+        <input type="text" name="username" placeholder="username">
+      </p>
+      <p>
+        <input type="password" name="password" placeholder="password">
+      </p>
+      <p>
+        <input type="submit">
+      </p>
+    </form>
+    `;
+    res.send(output);
+  });
 
 app.get('/tmp', (req,res) => {
     res.send('result:'+req.session.count)
