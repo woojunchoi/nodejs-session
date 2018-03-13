@@ -2,6 +2,7 @@ const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const app = express();
+const FileStore = require('session-file-store')(session);
 
 // const cookieParser = require('cookie-parser')
 // app.use(cookieParser('2342342nfafkljvlkz'));
@@ -11,6 +12,7 @@ app.use(session({
     secret: '44fae',
     resave: false,
     saveUninitialized: true,
+    store: new FileStore()
   }))
 
 // app.get('/count', (req,res) => {
