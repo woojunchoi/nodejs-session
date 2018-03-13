@@ -56,7 +56,9 @@ app.get('/welcome', function(req, res){
 
 app.get('/auth/logout', (req,res) => {
     delete req.session.displayName;
-    res.redirect('/welcome')
+    req.session.save(function() {
+      res.redirect('/welcome');
+      });
 })
 
 

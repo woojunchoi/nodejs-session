@@ -2,29 +2,20 @@ const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const app = express();
-const FileStore = require('session-file-store')(session);
+const MongoStore = require('connect-mongo')(session);
 
-// const cookieParser = require('cookie-parser')
-// app.use(cookieParser('2342342nfafkljvlkz'));
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(session({
-    secret: '44fae',
-    resave: false,
-    saveUninitialized: true,
-    store: new FileStore()
+    secret: 'keyboard cat',
+    saveUninitialized: false, // don't create session until something stored
+	resave: false, //don't save session if unmodified
+    store: new MongoStore({
+        url:'mongodb://woojun:spdlxm123@ds113749.mlab.com:13749/sessionstore'
+    })
   }))
 
-// app.get('/count', (req,res) => {
-//     if(req.session.count) {
-//         req.session.count++
-//     }
-//     else {
-//         req.session.count = 1;
-
-//     }
-//     res.send(`<h1>hi session: ${req.session.count}</h1>`)
-// })
 
 app.post('/auth/login', (req,res) => {
     const user = {
@@ -43,6 +34,7 @@ app.post('/auth/login', (req,res) => {
 
 app.get('/welcome', function(req, res){
       if(req.session.displayName) {
+          console.log(req.session)
         res.send(`
           <h1>Hello, ${req.session.displayName}</h1>
           <a href="/auth/logout">logout</a>
