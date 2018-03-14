@@ -2,8 +2,10 @@ const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const app = express();
+const md5 = require('md5')
 const MongoStore = require('connect-mongo')(session);
 
+const salt ='@#$!45212ffafafs'
 let user = [
     {
         username:'haru',
@@ -27,9 +29,12 @@ app.use(session({
 app.post('/auth/login', (req,res) => {
 
     for(let i=0; user.length; i++) {
-    if(user[i].username === req.body.username && user[i].password === req.body.password)  {
-        req.session.displayName = user.displayName;
+    if(user[i].username === req.body.username && user[i].password === md5(req.body.password+salt))  {
+        req.session.displayName = user[i].displayName;
         return req.session.save( ()=> {
+            console.log(md5(req.body.password+salt))
+            console.log(req.session)
+            console.log(user)
          res.redirect('/welcome')
         })
     }
@@ -53,7 +58,7 @@ app.get('/auth/register', (req,res) => {
 app.post('/auth/register', (req,res) => {
     let newUser = {
         username:req.body.username,
-        password:req.body.password,
+        password:md5(req.body.password+salt),
         displayName: req.body.displayName
     }
     user.push(newUser)
