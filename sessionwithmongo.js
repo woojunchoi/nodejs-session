@@ -4,6 +4,13 @@ const bodyParser = require('body-parser')
 const app = express();
 const MongoStore = require('connect-mongo')(session);
 
+let user = [
+    {
+        username:'haru',
+        password:'1234',
+        displayName: 'dengdeng'
+    }
+]
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -18,23 +25,46 @@ app.use(session({
 
 
 app.post('/auth/login', (req,res) => {
-    const user = {
-        username:'haru',
-        password:'1234',
-        displayName: 'dengdeng'
-    }
-    if(user.username === req.body.username && user.password === req.body.password)  {
+
+    for(let i=0; user.length; i++) {
+    if(user[i].username === req.body.username && user[i].password === req.body.password)  {
         req.session.displayName = user.displayName;
+        return req.session.save( ()=> {
+         res.redirect('/welcome')
+        })
+    }
+}
+    res.send(`<p>Please try again</p> <a href='/auth/login'>login</a>`)
+})
+
+app.get('/auth/register', (req,res) => {
+    var output = `
+    <h1>Register</h1>
+    <form action="/auth/register" method="post">
+        <input type="text" name="username" placeholder="username">
+        <input type="password" name="password" placeholder="password">
+        <input type="displayname" name="displayName" placeholer="displayname">
+        <input type="submit">
+    </form>
+    `;
+    res.send(output)
+})
+
+app.post('/auth/register', (req,res) => {
+    let newUser = {
+        username:req.body.username,
+        password:req.body.password,
+        displayName: req.body.displayName
+    }
+    user.push(newUser)
+    req.session.displayName = req.body.displayName;
+    return req.session.save(()=> {
         res.redirect('/welcome')
-    }
-    else {
-        res.send(`<p>Please try again</p> <a href='/auth/login'>login</a>`)
-    }
+    })
 })
 
 app.get('/welcome', function(req, res){
       if(req.session.displayName) {
-          console.log(req.session)
         res.send(`
           <h1>Hello, ${req.session.displayName}</h1>
           <a href="/auth/logout">logout</a>
